@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
     MainWindow: the app shell.
+     ____________________________________________________
+    | [icon] MVVMPhoto  File View Settings     title bar |
+    |____________________________________________________|
+    |                                                    |
+    |   content: every top-level view is DECLARED here,  |
+    |   bound to its child of ShellViewModel; which one  |
+    |   shows is shell state (x:Load / Visibility).      |
+    |   Nothing navigates in code.                       |
+    |   Today: ViewerView only.                          |
+    |____________________________________________________|
 
-     ___________________________________________
-    | [icon] MVVMPhoto              title bar   |
-    |___________________________________________|
-    |                                           |
-    |   content: every top-level view is        |
-    |   DECLARED here, bound to its child of    |
-    |   ShellViewModel; which one shows is      |
-    |   shell state (x:Load / Visibility).      |
-    |   Nothing navigates in code.              |
-    |___________________________________________|
-
+    The menu sits in TitleBar.Content, which the TitleBar keeps clickable (not a drag region).
     (Sketches use underscores: an XML comment may not contain two hyphens in a row.)
 -->
 <Window
@@ -21,6 +21,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:shell="using:MVVMPhoto.Views.Shell"
+    xmlns:viewer="using:MVVMPhoto.Views.Viewer"
     Title="MVVMPhoto"
     mc:Ignorable="d">
     <Window.SystemBackdrop>
@@ -34,12 +36,18 @@
         </Grid.RowDefinitions>
 
         <TitleBar x:Name="AppTitleBar" Title="MVVMPhoto">
+            <TitleBar.Resources>
+                <!-- The TitleBar template centres its Content slot through this theme resource; the menu goes left, after the title. -->
+                <HorizontalAlignment x:Key="TitleBarContentHorizontalAlignment">Left</HorizontalAlignment>
+            </TitleBar.Resources>
             <TitleBar.IconSource>
                 <ImageIconSource ImageSource="Assets/AppIcon.ico" />
             </TitleBar.IconSource>
+            <TitleBar.Content>
+                <shell:ShellMenuBar ViewModel="{x:Bind ViewModel}" />
+            </TitleBar.Content>
         </TitleBar>
 
-        <!-- Content area. Empty until step 2 declares the viewer here. -->
-        <Grid Grid.Row="1" />
+        <viewer:ViewerView Grid.Row="1" ViewModel="{x:Bind ViewModel.Viewer}" />
     </Grid>
 </Window>

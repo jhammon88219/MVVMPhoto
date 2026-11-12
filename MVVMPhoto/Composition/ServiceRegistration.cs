@@ -13,6 +13,7 @@ internal static class ServiceRegistration
 	{
 		// View models
 		services.AddSingleton<ShellViewModel>();
+		services.AddSingleton<ViewerViewModel>();
 
 		// Windows
 		services.AddSingleton<MainWindow>();

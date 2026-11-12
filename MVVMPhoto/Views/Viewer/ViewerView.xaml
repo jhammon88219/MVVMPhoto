@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    ViewerView: the viewer, side pane on the left and the photo area filling the rest.
+
+    Pane expanded                          Pane collapsed
+     ______________________________        ________________________________
+    | ViewerPane |  ViewerCanvas   |      |Rail|  ViewerCanvas             |
+    |  (224)     |                 |      |(44)|                           |
+    |____________|_________________|      |____|___________________________|
+
+    One VisualState switches the two: the base layout is the rail; PaneExpanded (active while
+    ViewModel.IsPaneExpanded) shows the pane instead. Both are declared here; neither is created in code.
+-->
+<UserControl
+    x:Class="MVVMPhoto.Views.Viewer.ViewerView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:viewer="using:MVVMPhoto.Views.Viewer">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="PaneStates">
+                <VisualState x:Name="PaneExpanded">
+                    <VisualState.StateTriggers>
+                        <StateTrigger IsActive="{x:Bind ViewModel.IsPaneExpanded, Mode=OneWay}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="ViewerPane.Visibility" Value="Visible" />
+                        <Setter Target="ViewerRail.Visibility" Value="Collapsed" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <viewer:ViewerRail x:Name="ViewerRail" ViewModel="{x:Bind ViewModel, Mode=OneWay}" />
+        <viewer:ViewerPane x:Name="ViewerPane" ViewModel="{x:Bind ViewModel, Mode=OneWay}" Visibility="Collapsed" />
+        <viewer:ViewerCanvas Grid.Column="1" />
+    </Grid>
+</UserControl>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    Shared look for the side pane and its collapsed rail, so each view only declares structure.
+
+    PaneIconButtonStyle       square icon button, transparent until hovered
+    PaneSectionStyle          a pane section: padding + hairline underneath
+    PaneSectionHeaderStyle    small muted section title ("Browse", "Zoom", ...)
+    PaneLabelStyle            muted left-hand label in a details row
+    PaneValueStyle            right-aligned value in a details row
+    RailSeparatorStyle        short horizontal rule between rail button groups
+-->
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <x:Double x:Key="ViewerPaneWidth">224</x:Double>
+    <x:Double x:Key="ViewerRailWidth">44</x:Double>
+
+    <Style x:Key="PaneIconButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Width" Value="32" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+
+    <Style x:Key="PaneSectionStyle" TargetType="Border">
+        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+        <Setter Property="BorderBrush" Value="{ThemeResource DividerStrokeColorDefaultBrush}" />
+    </Style>
+
+    <Style x:Key="PaneSectionHeaderStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+        <Setter Property="Foreground" Value="{ThemeResource TextFillColorTertiaryBrush}" />
+        <Setter Property="Margin" Value="0,0,0,6" />
+    </Style>
+
+    <Style x:Key="PaneLabelStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+        <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+    </Style>
+
+    <Style x:Key="PaneValueStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+        <Setter Property="HorizontalAlignment" Value="Right" />
+    </Style>
+
+    <Style x:Key="RailSeparatorStyle" TargetType="Rectangle">
+        <Setter Property="Width" Value="24" />
+        <Setter Property="Height" Value="1" />
+        <Setter Property="Margin" Value="0,4" />
+        <Setter Property="Fill" Value="{ThemeResource DividerStrokeColorDefaultBrush}" />
+    </Style>
+</ResourceDictionary>

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    ViewerPane: the expanded side pane, ViewerPaneWidth wide, full height, left of the photo.
+     ______________________________
+    | No photo open            [<|]|   header: title over subline, collapse button
+    | Open a photo to see it here  |
+    |______________________________|
+    | Browse                       |
+    | [open]        [<]  0 / 0  [>]|
+    |______________________________|
+    | Zoom                         |
+    | [-]  Fit  [+]     [fit] [1:1]|
+    |______________________________|
+    | Details                      |
+    | Dimensions               -   |
+    | File size                -   |
+    | Type                     -   |
+    | Modified                 -   |
+    |______________________________|
+
+    Step 2a: only the collapse button is wired (TogglePaneCommand). The rest are stubs that
+    2b to 2d bind; the placeholder text is replaced by bindings then.
+-->
+<UserControl
+    x:Class="MVVMPhoto.Views.Viewer.ViewerPane"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid
+        Width="{StaticResource ViewerPaneWidth}"
+        Background="{ThemeResource LayerFillColorDefaultBrush}"
+        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+        BorderThickness="0,0,1,0">
+        <StackPanel>
+
+            <!-- Header -->
+            <Border Style="{StaticResource PaneSectionStyle}">
+                <Grid ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="No photo open" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Style="{StaticResource PaneLabelStyle}" Text="Open a photo to see it here" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                    <Button
+                        Grid.Column="1"
+                        VerticalAlignment="Top"
+                        AutomationProperties.Name="Collapse pane"
+                        Command="{x:Bind ViewModel.TogglePaneCommand}"
+                        Style="{StaticResource PaneIconButtonStyle}"
+                        ToolTipService.ToolTip="Collapse pane (Ctrl+B)">
+                        <FontIcon Glyph="&#xE89F;" />
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- Browse -->
+            <Border Style="{StaticResource PaneSectionStyle}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource PaneSectionHeaderStyle}" Text="Browse" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Button AutomationProperties.Name="Open photo" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Open photo (Ctrl+O)">
+                            <FontIcon Glyph="&#xE838;" />
+                        </Button>
+                        <Button Grid.Column="2" AutomationProperties.Name="Previous photo" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Previous photo (Left)">
+                            <FontIcon Glyph="&#xE76B;" />
+                        </Button>
+                        <TextBlock
+                            Grid.Column="3"
+                            MinWidth="56"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="0 / 0"
+                            TextAlignment="Center" />
+                        <Button Grid.Column="4" AutomationProperties.Name="Next photo" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Next photo (Right)">
+                            <FontIcon Glyph="&#xE76C;" />
+                        </Button>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Zoom -->
+            <Border Style="{StaticResource PaneSectionStyle}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource PaneSectionHeaderStyle}" Text="Zoom" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Button AutomationProperties.Name="Zoom out" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Zoom out (Ctrl+Minus)">
+                            <FontIcon Glyph="&#xE71F;" />
+                        </Button>
+                        <TextBlock
+                            Grid.Column="1"
+                            MinWidth="44"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="Fit"
+                            TextAlignment="Center" />
+                        <Button Grid.Column="2" AutomationProperties.Name="Zoom in" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Zoom in (Ctrl+Plus)">
+                            <FontIcon Glyph="&#xE8A3;" />
+                        </Button>
+                        <Button Grid.Column="4" AutomationProperties.Name="Fit to window" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Fit to window (0)">
+                            <FontIcon Glyph="&#xE9A6;" />
+                        </Button>
+                        <Button Grid.Column="5" AutomationProperties.Name="Actual size" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Actual size (1)">
+                            <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="1:1" />
+                        </Button>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Details -->
+            <Border BorderThickness="0" Style="{StaticResource PaneSectionStyle}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource PaneSectionHeaderStyle}" Text="Details" />
+                    <Grid RowSpacing="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Style="{StaticResource PaneLabelStyle}" Text="Dimensions" />
+                        <TextBlock Grid.Column="1" Style="{StaticResource PaneValueStyle}" Text="-" />
+                        <TextBlock Grid.Row="1" Style="{StaticResource PaneLabelStyle}" Text="File size" />
+                        <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource PaneValueStyle}" Text="-" />
+                        <TextBlock Grid.Row="2" Style="{StaticResource PaneLabelStyle}" Text="Type" />
+                        <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource PaneValueStyle}" Text="-" />
+                        <TextBlock Grid.Row="3" Style="{StaticResource PaneLabelStyle}" Text="Modified" />
+                        <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource PaneValueStyle}" Text="-" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Grid>
+</UserControl>

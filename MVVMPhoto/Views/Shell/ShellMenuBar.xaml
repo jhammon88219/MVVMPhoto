@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    ShellMenuBar: the app menu, hosted in the title bar (MainWindow's TitleBar.Content).
+     ___________________________________
+    | File   View   Settings            |
+    |___________________________________|
+
+    File       Open...               Ctrl+O
+               ______
+               Exit
+
+    View       [x] Show pane         Ctrl+B
+               ______
+               Zoom in               Ctrl+Plus
+               Zoom out              Ctrl+Minus
+               Fit to window         0
+               Actual size           1
+               ______
+               Full screen           F11
+
+    Settings   Theme  >  (o) System  ( ) Light  ( ) Dark
+               ______
+               Settings...           Ctrl+Comma
+
+    Step 2a: only "Show pane" is wired (two-way to Viewer.IsPaneExpanded, with a real Ctrl+B
+    accelerator). Everything else is a stub: the shortcut text is shown but not registered yet.
+-->
+<UserControl
+    x:Class="MVVMPhoto.Views.Shell.ShellMenuBar"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <MenuBar>
+        <MenuBarItem Title="File">
+            <MenuFlyoutItem KeyboardAcceleratorTextOverride="Ctrl+O" Text="Open...">
+                <MenuFlyoutItem.Icon>
+                    <FontIcon Glyph="&#xE838;" />
+                </MenuFlyoutItem.Icon>
+            </MenuFlyoutItem>
+            <MenuFlyoutSeparator />
+            <MenuFlyoutItem Text="Exit" />
+        </MenuBarItem>
+
+        <MenuBarItem Title="View">
+            <ToggleMenuFlyoutItem IsChecked="{x:Bind ViewModel.Viewer.IsPaneExpanded, Mode=TwoWay}" Text="Show pane">
+                <ToggleMenuFlyoutItem.KeyboardAccelerators>
+                    <KeyboardAccelerator Key="B" Modifiers="Control" />
+                </ToggleMenuFlyoutItem.KeyboardAccelerators>
+            </ToggleMenuFlyoutItem>
+            <MenuFlyoutSeparator />
+            <MenuFlyoutItem KeyboardAcceleratorTextOverride="Ctrl+Plus" Text="Zoom in">
+                <MenuFlyoutItem.Icon>
+                    <FontIcon Glyph="&#xE8A3;" />
+                </MenuFlyoutItem.Icon>
+            </MenuFlyoutItem>
+            <MenuFlyoutItem KeyboardAcceleratorTextOverride="Ctrl+Minus" Text="Zoom out">
+                <MenuFlyoutItem.Icon>
+                    <FontIcon Glyph="&#xE71F;" />
+                </MenuFlyoutItem.Icon>
+            </MenuFlyoutItem>
+            <MenuFlyoutItem KeyboardAcceleratorTextOverride="0" Text="Fit to window">
+                <MenuFlyoutItem.Icon>
+                    <FontIcon Glyph="&#xE9A6;" />
+                </MenuFlyoutItem.Icon>
+            </MenuFlyoutItem>
+            <MenuFlyoutItem KeyboardAcceleratorTextOverride="1" Text="Actual size" />
+            <MenuFlyoutSeparator />
+            <MenuFlyoutItem KeyboardAcceleratorTextOverride="F11" Text="Full screen">
+                <MenuFlyoutItem.Icon>
+                    <FontIcon Glyph="&#xE740;" />
+                </MenuFlyoutItem.Icon>
+            </MenuFlyoutItem>
+        </MenuBarItem>
+
+        <MenuBarItem Title="Settings">
+            <MenuFlyoutSubItem Text="Theme">
+                <RadioMenuFlyoutItem GroupName="Theme" IsChecked="True" Text="System" />
+                <RadioMenuFlyoutItem GroupName="Theme" Text="Light" />
+                <RadioMenuFlyoutItem GroupName="Theme" Text="Dark" />
+            </MenuFlyoutSubItem>
+            <MenuFlyoutSeparator />
+            <MenuFlyoutItem KeyboardAcceleratorTextOverride="Ctrl+Comma" Text="Settings...">
+                <MenuFlyoutItem.Icon>
+                    <FontIcon Glyph="&#xE713;" />
+                </MenuFlyoutItem.Icon>
+            </MenuFlyoutItem>
+        </MenuBarItem>
+    </MenuBar>
+</UserControl>
