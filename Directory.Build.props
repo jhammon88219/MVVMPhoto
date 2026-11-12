@@ -1,0 +1,29 @@
+<!--
+  Settings every project in the solution inherits (MSBuild picks this file up automatically).
+  Per-project files keep only what is specific to that project.
+-->
+<Project>
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Run the .editorconfig style rules during build, not only in the editor. -->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <!-- Needed for the unused-usings rule (IDE0005) to run in build. CS1591 (missing XML doc) stays off:
+         comments are written where they explain something, not on every public member. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+
+    <!-- Nullable mistakes are bugs, not style: fail the build on them. -->
+    <WarningsAsErrors>$(WarningsAsErrors);nullable</WarningsAsErrors>
+
+    <!-- Fails restore if a package version is not pinned in Directory.Packages.props. -->
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+
+    <Authors>DevJohn</Authors>
+    <Product>MVVMPhoto</Product>
+    <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
+  </PropertyGroup>
+</Project>
