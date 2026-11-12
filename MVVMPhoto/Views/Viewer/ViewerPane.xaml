@@ -6,7 +6,7 @@
     | C:\Pictures\Trips            |   wrapping to 3 lines), collapse button
     |______________________________|
     | Browse                       |
-    | [open]        [<]  0 / 0  [>]|
+    | [open]      [<]  12 / 340 [>]|   previous / next stop at the folder's ends
     |______________________________|
     | Zoom                         |
     | [-]  Fit  [+]     [fit] [1:1]|
@@ -18,12 +18,18 @@
     | Modified   14/06/2026 18:42  |
     |______________________________|
 
-    Wired: collapse, open, header, details. Stubs until 2c/2d: previous, next, counter, zoom.
+    Wired: collapse, open, header, browse, details. Stubs until 2d: zoom.
 -->
 <UserControl
     x:Class="MVVMPhoto.Views.Viewer.ViewerPane"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <UserControl.Resources>
+        <!-- Lightweight styling: a disabled icon button (previous at the first photo) stays flat, not a grey box. -->
+        <SolidColorBrush x:Key="ButtonBackgroundDisabled" Color="Transparent" />
+        <SolidColorBrush x:Key="ButtonBorderBrushDisabled" Color="Transparent" />
+    </UserControl.Resources>
 
     <Grid
         Width="{StaticResource ViewerPaneWidth}"
@@ -80,7 +86,7 @@
                         <Button AutomationProperties.Name="Open photo" Command="{x:Bind ViewModel.OpenCommand}" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Open photo (Ctrl+O)">
                             <FontIcon Glyph="&#xE838;" />
                         </Button>
-                        <Button Grid.Column="2" AutomationProperties.Name="Previous photo" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Previous photo (Left)">
+                        <Button Grid.Column="2" AutomationProperties.Name="Previous photo" Command="{x:Bind ViewModel.PreviousCommand}" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Previous photo (Left)">
                             <FontIcon Glyph="&#xE76B;" />
                         </Button>
                         <TextBlock
@@ -88,9 +94,9 @@
                             MinWidth="56"
                             VerticalAlignment="Center"
                             Style="{StaticResource CaptionTextBlockStyle}"
-                            Text="0 / 0"
+                            Text="{x:Bind ViewModel.PositionText, Mode=OneWay}"
                             TextAlignment="Center" />
-                        <Button Grid.Column="4" AutomationProperties.Name="Next photo" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Next photo (Right)">
+                        <Button Grid.Column="4" AutomationProperties.Name="Next photo" Command="{x:Bind ViewModel.NextCommand}" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Next photo (Right)">
                             <FontIcon Glyph="&#xE76C;" />
                         </Button>
                     </Grid>

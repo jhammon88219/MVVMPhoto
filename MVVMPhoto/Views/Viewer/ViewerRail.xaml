@@ -16,13 +16,19 @@
     | [i]  |   details: expands the pane (bottom-aligned)
     |______|
 
-    Same controls as ViewerPane, as icons. Wired: expand, details (TogglePaneCommand) and open.
-    Stubs until 2c/2d: previous, next, zoom.
+    Same controls as ViewerPane, as icons. Wired: expand, details (TogglePaneCommand), open, previous,
+    next. Stubs until 2d: zoom.
 -->
 <UserControl
     x:Class="MVVMPhoto.Views.Viewer.ViewerRail"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <UserControl.Resources>
+        <!-- Lightweight styling: a disabled icon button (previous at the first photo) stays flat, not a grey box. -->
+        <SolidColorBrush x:Key="ButtonBackgroundDisabled" Color="Transparent" />
+        <SolidColorBrush x:Key="ButtonBorderBrushDisabled" Color="Transparent" />
+    </UserControl.Resources>
 
     <Grid
         Width="{StaticResource ViewerRailWidth}"
@@ -43,10 +49,10 @@
             <Button AutomationProperties.Name="Open photo" Command="{x:Bind ViewModel.OpenCommand}" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Open photo (Ctrl+O)">
                 <FontIcon Glyph="&#xE838;" />
             </Button>
-            <Button AutomationProperties.Name="Previous photo" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Previous photo (Left)">
+            <Button AutomationProperties.Name="Previous photo" Command="{x:Bind ViewModel.PreviousCommand}" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Previous photo (Left)">
                 <FontIcon Glyph="&#xE76B;" />
             </Button>
-            <Button AutomationProperties.Name="Next photo" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Next photo (Right)">
+            <Button AutomationProperties.Name="Next photo" Command="{x:Bind ViewModel.NextCommand}" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Next photo (Right)">
                 <FontIcon Glyph="&#xE76C;" />
             </Button>
             <Rectangle Style="{StaticResource RailSeparatorStyle}" />

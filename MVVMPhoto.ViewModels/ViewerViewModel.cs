@@ -8,19 +8,30 @@ using MVVMPhoto.Core.Services;
 namespace MVVMPhoto.ViewModels;
 
 /// <summary>
-/// The photo viewer: the side pane (expanded or collapsed to a rail) and the photo on show.
-/// Step 2b: open one photo and describe it. Browsing the folder and zooming arrive in 2c and 2d.
+/// The photo viewer: the side pane (expanded or collapsed to a rail), the photo on show, and the folder
+/// it steps through. Zooming arrives in 2d.
 /// </summary>
 public partial class ViewerViewModel : ObservableObject
 {
 	private readonly IPhotoFilePicker _picker;
 	private readonly IPhotoInfoReader _reader;
+	private readonly IPhotoFolderReader _folderReader;
 	private readonly ILogger<ViewerViewModel> _logger;
 
-	public ViewerViewModel(IPhotoFilePicker picker, IPhotoInfoReader reader, ILogger<ViewerViewModel> logger)
+	// Bumped by every show / folder request. A request whose number is no longer current when its read
+	// finishes is dropped, so fast stepping (holding an arrow key) always ends on the newest photo.
+	private int _showVersion;
+	private int _folderVersion;
+
+	public ViewerViewModel(
+		IPhotoFilePicker picker,
+		IPhotoInfoReader reader,
+		IPhotoFolderReader folderReader,
+		ILogger<ViewerViewModel> logger)
 	{
 		_picker = picker;
 		_reader = reader;
+		_folderReader = folderReader;
 		_logger = logger;
 	}
 
@@ -28,16 +39,22 @@ public partial class ViewerViewModel : ObservableObject
 	[ObservableProperty]
 	public partial bool IsPaneExpanded { get; set; } = true;
 
-	/// <summary>The photo on show, or null before one is opened (or after one fails to open).</summary>
+	/// <summary>The photo on show, or null before one is opened (or when the current file fails to open).</summary>
 	[ObservableProperty]
 	[NotifyPropertyChangedFor(nameof(HasPhoto), nameof(FileName), nameof(HeaderTitle), nameof(HeaderSubtitle))]
 	[NotifyPropertyChangedFor(nameof(DimensionsText), nameof(FileSizeText), nameof(TypeText), nameof(ModifiedText))]
 	public partial PhotoInfo? Photo { get; private set; }
 
-	/// <summary>Why the last open failed, in words for the user; null when it didn't.</summary>
+	/// <summary>Why the current file failed to open, in words for the user; null when it didn't.</summary>
 	[ObservableProperty]
 	[NotifyPropertyChangedFor(nameof(HeaderSubtitle))]
 	public partial string? OpenError { get; private set; }
+
+	/// <summary>The folder being stepped through and the current position in it.</summary>
+	[ObservableProperty]
+	[NotifyPropertyChangedFor(nameof(PositionText))]
+	[NotifyCanExecuteChangedFor(nameof(PreviousCommand), nameof(NextCommand))]
+	public partial PhotoSequence Sequence { get; private set; } = PhotoSequence.Empty;
 
 	public bool HasPhoto => Photo is not null;
 
@@ -47,6 +64,10 @@ public partial class ViewerViewModel : ObservableObject
 	public string HeaderTitle => Photo?.FileName ?? "No photo open";
 
 	public string HeaderSubtitle => OpenError ?? Photo?.FolderPath ?? "Open a photo to see it here";
+
+	/// <summary>"12 / 340"; "0 / 0" with nothing open.</summary>
+	public string PositionText =>
+		string.Format(CultureInfo.CurrentCulture, "{0} / {1}", Sequence.Index + 1, Sequence.Count);
 
 	public string DimensionsText =>
 		Photo is { } photo ? PhotoDetailsText.Dimensions(photo.PixelWidth, photo.PixelHeight, CultureInfo.CurrentCulture) : PhotoDetailsText.None;
@@ -73,33 +94,96 @@ public partial class ViewerViewModel : ObservableObject
 		}
 	}
 
+	// AllowConcurrentExecutions: otherwise the button greys out while each photo loads (a flicker on every
+	// press), and a key held down would be ignored until the read finishes. Stale reads are dropped instead.
+	[RelayCommand(CanExecute = nameof(CanGoPrevious), AllowConcurrentExecutions = true)]
+	private Task PreviousAsync() => StepAsync(Sequence.Previous());
+
+	[RelayCommand(CanExecute = nameof(CanGoNext), AllowConcurrentExecutions = true)]
+	private Task NextAsync() => StepAsync(Sequence.Next());
+
+	private bool CanGoPrevious() => Sequence.HasPrevious;
+
+	private bool CanGoNext() => Sequence.HasNext;
+
 	/// <summary>
-	/// Opens <paramref name="filePath"/> (from the picker, Explorer or the command line). On failure the
-	/// viewer goes back to its empty state and <see cref="OpenError"/> says why; it never throws.
+	/// Opens <paramref name="filePath"/> (from the picker, Explorer or the command line), then lists its
+	/// folder for previous / next. Never throws: a file that fails to open is reported in <see cref="OpenError"/>.
 	/// </summary>
 	public async Task OpenFileAsync(string filePath)
 	{
-		var fileName = Path.GetFileName(filePath);
-
 		if (!PhotoFormats.IsSupported(filePath))
 		{
 			LogUnsupportedType(filePath);
-			Show(null, $"{fileName} isn't a photo type MVVMPhoto opens.");
+			_showVersion++;
+			_folderVersion++;
+			Sequence = PhotoSequence.Empty;
+			Show(null, $"{Path.GetFileName(filePath)} isn't a photo type MVVMPhoto opens.");
+			return;
+		}
+
+		// Position on just this file straight away; the folder listing fills in the rest.
+		Sequence = PhotoSequence.Create([filePath], filePath);
+		await ShowFileAsync(filePath);
+		await LoadFolderAsync(filePath);
+	}
+
+	private async Task StepAsync(PhotoSequence moved)
+	{
+		Sequence = moved;
+		if (moved.CurrentPath is { } path)
+		{
+			await ShowFileAsync(path);
+		}
+	}
+
+	private async Task ShowFileAsync(string filePath)
+	{
+		var version = ++_showVersion;
+		try
+		{
+			var photo = await _reader.ReadAsync(filePath);
+			if (version == _showVersion)
+			{
+				LogOpened(filePath, photo.PixelWidth, photo.PixelHeight, photo.FormatName);
+				Show(photo, null);
+			}
+		}
+		catch (Exception ex)
+		{
+			// Any failure here is a file problem (missing, locked, damaged, no codec), not an app bug:
+			// report it and carry on; previous / next still work. The exception is logged in full.
+			LogOpenFailed(ex, filePath);
+			if (version == _showVersion)
+			{
+				Show(null, $"Couldn't open {Path.GetFileName(filePath)}. It may be damaged, or in a format Windows can't read.");
+			}
+		}
+	}
+
+	private async Task LoadFolderAsync(string filePath)
+	{
+		var version = ++_folderVersion;
+		var folderPath = Path.GetDirectoryName(filePath);
+		if (string.IsNullOrEmpty(folderPath))
+		{
 			return;
 		}
 
 		try
 		{
-			var photo = await _reader.ReadAsync(filePath);
-			LogOpened(filePath, photo.PixelWidth, photo.PixelHeight, photo.FormatName);
-			Show(photo, null);
+			var paths = await _folderReader.ListPhotosAsync(folderPath);
+			if (version == _folderVersion)
+			{
+				// Re-anchor on the photo showing now: the user may have stepped while the folder was listed.
+				Sequence = PhotoSequence.Create(paths, Sequence.CurrentPath ?? filePath);
+				LogFolderListed(folderPath, paths.Count);
+			}
 		}
 		catch (Exception ex)
 		{
-			// Any failure here is a file problem (missing, locked, damaged, no codec), not an app bug:
-			// report it and carry on. The exception is logged in full.
-			LogOpenFailed(ex, filePath);
-			Show(null, $"Couldn't open {fileName}. It may be damaged, or in a format Windows can't read.");
+			// The photo itself is open; only stepping is lost. Keep the one-file sequence.
+			LogFolderFailed(ex, folderPath);
 		}
 	}
 
@@ -117,4 +201,10 @@ public partial class ViewerViewModel : ObservableObject
 
 	[LoggerMessage(Level = LogLevel.Warning, Message = "Couldn't open {FilePath}")]
 	private partial void LogOpenFailed(Exception exception, string filePath);
+
+	[LoggerMessage(Level = LogLevel.Information, Message = "Listed {Count} photos in {FolderPath}")]
+	private partial void LogFolderListed(string folderPath, int count);
+
+	[LoggerMessage(Level = LogLevel.Warning, Message = "Couldn't list the photos in {FolderPath}")]
+	private partial void LogFolderFailed(Exception exception, string folderPath);
 }

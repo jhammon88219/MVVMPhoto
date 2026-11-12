@@ -9,8 +9,9 @@ public class ViewerViewModelTests
 
 	private readonly FakePhotoFilePicker _picker = new();
 	private readonly FakePhotoInfoReader _reader = new();
+	private readonly FakePhotoFolderReader _folders = new();
 
-	private ViewerViewModel CreateViewer() => new(_picker, _reader, NullLogger<ViewerViewModel>.Instance);
+	private ViewerViewModel CreateViewer() => new(_picker, _reader, _folders, NullLogger<ViewerViewModel>.Instance);
 
 	// Pane
 

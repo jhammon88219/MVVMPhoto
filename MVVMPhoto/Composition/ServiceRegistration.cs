@@ -17,6 +17,7 @@ internal static class ServiceRegistration
 		services.AddSingleton<MainWindowContext>();
 		services.AddSingleton<IPhotoFilePicker, PhotoFilePicker>();
 		services.AddSingleton<IPhotoInfoReader, WicPhotoInfoReader>();
+		services.AddSingleton<IPhotoFolderReader, FileSystemPhotoFolderReader>();
 
 		// View models
 		services.AddSingleton<ShellViewModel>();

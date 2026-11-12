@@ -11,6 +11,9 @@
 
     View       [x] Show pane         Ctrl+B
                ______
+               Previous photo        Left
+               Next photo            Right
+               ______
                Zoom in               Ctrl+Plus
                Zoom out              Ctrl+Minus
                Fit to window         0
@@ -22,8 +25,9 @@
                ______
                Settings...           Ctrl+Comma
 
-    Wired: Open... (Viewer.OpenCommand, real Ctrl+O) and Show pane (two-way to Viewer.IsPaneExpanded,
-    real Ctrl+B). Everything else is a stub: its shortcut text is shown but not registered yet.
+    Wired: Open... (real Ctrl+O), Show pane (two-way to Viewer.IsPaneExpanded, real Ctrl+B), Previous /
+    Next photo (real Left / Right: these menu items are where the arrow keys are registered, so they work
+    with the pane expanded or collapsed). Everything else is a stub: shortcut text shown, not registered.
 -->
 <UserControl
     x:Class="MVVMPhoto.Views.Shell.ShellMenuBar"
@@ -50,6 +54,23 @@
                     <KeyboardAccelerator Key="B" Modifiers="Control" />
                 </ToggleMenuFlyoutItem.KeyboardAccelerators>
             </ToggleMenuFlyoutItem>
+            <MenuFlyoutSeparator />
+            <MenuFlyoutItem Command="{x:Bind ViewModel.Viewer.PreviousCommand}" Text="Previous photo">
+                <MenuFlyoutItem.Icon>
+                    <FontIcon Glyph="&#xE76B;" />
+                </MenuFlyoutItem.Icon>
+                <MenuFlyoutItem.KeyboardAccelerators>
+                    <KeyboardAccelerator Key="Left" />
+                </MenuFlyoutItem.KeyboardAccelerators>
+            </MenuFlyoutItem>
+            <MenuFlyoutItem Command="{x:Bind ViewModel.Viewer.NextCommand}" Text="Next photo">
+                <MenuFlyoutItem.Icon>
+                    <FontIcon Glyph="&#xE76C;" />
+                </MenuFlyoutItem.Icon>
+                <MenuFlyoutItem.KeyboardAccelerators>
+                    <KeyboardAccelerator Key="Right" />
+                </MenuFlyoutItem.KeyboardAccelerators>
+            </MenuFlyoutItem>
             <MenuFlyoutSeparator />
             <MenuFlyoutItem KeyboardAcceleratorTextOverride="Ctrl+Plus" Text="Zoom in">
                 <MenuFlyoutItem.Icon>
