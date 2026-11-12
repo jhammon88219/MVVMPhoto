@@ -22,8 +22,8 @@
                ______
                Settings...           Ctrl+Comma
 
-    Step 2a: only "Show pane" is wired (two-way to Viewer.IsPaneExpanded, with a real Ctrl+B
-    accelerator). Everything else is a stub: the shortcut text is shown but not registered yet.
+    Wired: Open... (Viewer.OpenCommand, real Ctrl+O) and Show pane (two-way to Viewer.IsPaneExpanded,
+    real Ctrl+B). Everything else is a stub: its shortcut text is shown but not registered yet.
 -->
 <UserControl
     x:Class="MVVMPhoto.Views.Shell.ShellMenuBar"
@@ -32,10 +32,13 @@
 
     <MenuBar>
         <MenuBarItem Title="File">
-            <MenuFlyoutItem KeyboardAcceleratorTextOverride="Ctrl+O" Text="Open...">
+            <MenuFlyoutItem Command="{x:Bind ViewModel.Viewer.OpenCommand}" Text="Open...">
                 <MenuFlyoutItem.Icon>
                     <FontIcon Glyph="&#xE838;" />
                 </MenuFlyoutItem.Icon>
+                <MenuFlyoutItem.KeyboardAccelerators>
+                    <KeyboardAccelerator Key="O" Modifiers="Control" />
+                </MenuFlyoutItem.KeyboardAccelerators>
             </MenuFlyoutItem>
             <MenuFlyoutSeparator />
             <MenuFlyoutItem Text="Exit" />

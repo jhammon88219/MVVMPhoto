@@ -16,8 +16,8 @@
     | [i]  |   details: expands the pane (bottom-aligned)
     |______|
 
-    Same controls as ViewerPane, as icons. Step 2a: expand and details are wired
-    (TogglePaneCommand); the rest are stubs for 2b to 2d.
+    Same controls as ViewerPane, as icons. Wired: expand, details (TogglePaneCommand) and open.
+    Stubs until 2c/2d: previous, next, zoom.
 -->
 <UserControl
     x:Class="MVVMPhoto.Views.Viewer.ViewerRail"
@@ -40,7 +40,7 @@
                 <FontIcon Glyph="&#xE8A0;" />
             </Button>
             <Rectangle Style="{StaticResource RailSeparatorStyle}" />
-            <Button AutomationProperties.Name="Open photo" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Open photo (Ctrl+O)">
+            <Button AutomationProperties.Name="Open photo" Command="{x:Bind ViewModel.OpenCommand}" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Open photo (Ctrl+O)">
                 <FontIcon Glyph="&#xE838;" />
             </Button>
             <Button AutomationProperties.Name="Previous photo" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Previous photo (Left)">

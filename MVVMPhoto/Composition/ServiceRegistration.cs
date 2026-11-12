@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using MVVMPhoto.Core.Services;
+using MVVMPhoto.Services;
 using MVVMPhoto.ViewModels;
 
 namespace MVVMPhoto.Composition;
@@ -11,6 +13,11 @@ internal static class ServiceRegistration
 {
 	public static IServiceCollection AddMVVMPhoto(this IServiceCollection services)
 	{
+		// Services
+		services.AddSingleton<MainWindowContext>();
+		services.AddSingleton<IPhotoFilePicker, PhotoFilePicker>();
+		services.AddSingleton<IPhotoInfoReader, WicPhotoInfoReader>();
+
 		// View models
 		services.AddSingleton<ShellViewModel>();
 		services.AddSingleton<ViewerViewModel>();

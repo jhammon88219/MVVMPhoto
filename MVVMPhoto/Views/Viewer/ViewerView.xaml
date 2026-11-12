@@ -39,6 +39,6 @@
 
         <viewer:ViewerRail x:Name="ViewerRail" ViewModel="{x:Bind ViewModel, Mode=OneWay}" />
         <viewer:ViewerPane x:Name="ViewerPane" ViewModel="{x:Bind ViewModel, Mode=OneWay}" Visibility="Collapsed" />
-        <viewer:ViewerCanvas Grid.Column="1" />
+        <viewer:ViewerCanvas Grid.Column="1" ViewModel="{x:Bind ViewModel, Mode=OneWay}" />
     </Grid>
 </UserControl>

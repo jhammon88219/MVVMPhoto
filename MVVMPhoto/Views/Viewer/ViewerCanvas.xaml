@@ -1,25 +1,53 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
     ViewerCanvas: the photo area, everything right of the pane. Nothing is ever drawn over the photo.
-     ________________________________________
-    |                                        |
-    |               [photo icon]             |
-    |          Open a photo to start         |
-    |   Or drop one here. Ctrl+O also works. |
-    |              [ Open photo ]            |
-    |                                        |
-    |________________________________________|
 
-    Step 2a: only the empty state, with a stub button. 2b adds the photo itself and switches
-    between the two by view model state.
+    No photo (base layout)                     HasPhoto (VisualState PhotoShown)
+     ________________________________________   ________________________________________
+    |                                        | |                                        |
+    |               [photo icon]             | |        ______________________          |
+    |          Open a photo to start         | |       |                      |         |
+    |   Or drop one here. Ctrl+O also works. | |       |   photo, fitted:     |         |
+    |              [ Open photo ]            | |       |   shrunk to fit,     |         |
+    |                                        | |       |   never enlarged     |         |
+    |________________________________________| |_______|______________________|_________|
+
+    Fit = a Viewbox with StretchDirection DownOnly around the Image. Zoom and pan replace this in 2d.
 -->
 <UserControl
     x:Class="MVVMPhoto.Views.Viewer.ViewerCanvas"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:viewer="using:MVVMPhoto.Views.Viewer">
 
     <Grid Background="{ThemeResource SolidBackgroundFillColorBaseBrush}">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="PhotoStates">
+                <VisualState x:Name="PhotoShown">
+                    <VisualState.StateTriggers>
+                        <StateTrigger IsActive="{x:Bind ViewModel.HasPhoto, Mode=OneWay}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="PhotoViewbox.Visibility" Value="Visible" />
+                        <Setter Target="EmptyState.Visibility" Value="Collapsed" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <Viewbox
+            x:Name="PhotoViewbox"
+            Margin="16"
+            StretchDirection="DownOnly"
+            Visibility="Collapsed">
+            <Image
+                AutomationProperties.Name="{x:Bind ViewModel.FileName, Mode=OneWay}"
+                Source="{x:Bind viewer:PhotoImageSource.From(ViewModel.Photo), Mode=OneWay}"
+                Stretch="None" />
+        </Viewbox>
+
         <StackPanel
+            x:Name="EmptyState"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             Spacing="8">
@@ -40,6 +68,7 @@
             <Button
                 Margin="0,8,0,0"
                 HorizontalAlignment="Center"
+                Command="{x:Bind ViewModel.OpenCommand}"
                 Content="Open photo"
                 Style="{StaticResource AccentButtonStyle}" />
         </StackPanel>

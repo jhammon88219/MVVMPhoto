@@ -2,8 +2,8 @@
 <!--
     ViewerPane: the expanded side pane, ViewerPaneWidth wide, full height, left of the photo.
      ______________________________
-    | No photo open            [<|]|   header: title over subline, collapse button
-    | Open a photo to see it here  |
+    | IMG_2041.jpg             [<|]|   header: file name over folder (or the open error,
+    | C:\Pictures\Trips            |   wrapping to 3 lines), collapse button
     |______________________________|
     | Browse                       |
     | [open]        [<]  0 / 0  [>]|
@@ -12,14 +12,13 @@
     | [-]  Fit  [+]     [fit] [1:1]|
     |______________________________|
     | Details                      |
-    | Dimensions               -   |
-    | File size                -   |
-    | Type                     -   |
-    | Modified                 -   |
+    | Dimensions      6000 × 4000  |
+    | File size            8.4 MB  |
+    | Type                   JPEG  |
+    | Modified   14/06/2026 18:42  |
     |______________________________|
 
-    Step 2a: only the collapse button is wired (TogglePaneCommand). The rest are stubs that
-    2b to 2d bind; the placeholder text is replaced by bindings then.
+    Wired: collapse, open, header, details. Stubs until 2c/2d: previous, next, counter, zoom.
 -->
 <UserControl
     x:Class="MVVMPhoto.Views.Viewer.ViewerPane"
@@ -41,8 +40,18 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel>
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="No photo open" TextTrimming="CharacterEllipsis" />
-                        <TextBlock Style="{StaticResource PaneLabelStyle}" Text="Open a photo to see it here" TextTrimming="CharacterEllipsis" />
+                        <TextBlock
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Text="{x:Bind ViewModel.HeaderTitle, Mode=OneWay}"
+                            TextTrimming="CharacterEllipsis"
+                            ToolTipService.ToolTip="{x:Bind ViewModel.HeaderTitle, Mode=OneWay}" />
+                        <TextBlock
+                            MaxLines="3"
+                            Style="{StaticResource PaneLabelStyle}"
+                            Text="{x:Bind ViewModel.HeaderSubtitle, Mode=OneWay}"
+                            TextTrimming="CharacterEllipsis"
+                            TextWrapping="Wrap"
+                            ToolTipService.ToolTip="{x:Bind ViewModel.HeaderSubtitle, Mode=OneWay}" />
                     </StackPanel>
                     <Button
                         Grid.Column="1"
@@ -68,7 +77,7 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <Button AutomationProperties.Name="Open photo" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Open photo (Ctrl+O)">
+                        <Button AutomationProperties.Name="Open photo" Command="{x:Bind ViewModel.OpenCommand}" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Open photo (Ctrl+O)">
                             <FontIcon Glyph="&#xE838;" />
                         </Button>
                         <Button Grid.Column="2" AutomationProperties.Name="Previous photo" Style="{StaticResource PaneIconButtonStyle}" ToolTipService.ToolTip="Previous photo (Left)">
@@ -140,13 +149,13 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <TextBlock Style="{StaticResource PaneLabelStyle}" Text="Dimensions" />
-                        <TextBlock Grid.Column="1" Style="{StaticResource PaneValueStyle}" Text="-" />
+                        <TextBlock Grid.Column="1" Style="{StaticResource PaneValueStyle}" Text="{x:Bind ViewModel.DimensionsText, Mode=OneWay}" />
                         <TextBlock Grid.Row="1" Style="{StaticResource PaneLabelStyle}" Text="File size" />
-                        <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource PaneValueStyle}" Text="-" />
+                        <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource PaneValueStyle}" Text="{x:Bind ViewModel.FileSizeText, Mode=OneWay}" />
                         <TextBlock Grid.Row="2" Style="{StaticResource PaneLabelStyle}" Text="Type" />
-                        <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource PaneValueStyle}" Text="-" />
+                        <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource PaneValueStyle}" Text="{x:Bind ViewModel.TypeText, Mode=OneWay}" />
                         <TextBlock Grid.Row="3" Style="{StaticResource PaneLabelStyle}" Text="Modified" />
-                        <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource PaneValueStyle}" Text="-" />
+                        <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource PaneValueStyle}" Text="{x:Bind ViewModel.ModifiedText, Mode=OneWay}" />
                     </Grid>
                 </StackPanel>
             </Border>

@@ -5,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using MVVMPhoto.Composition;
 using MVVMPhoto.Core.Services;
+using MVVMPhoto.Services;
+using MVVMPhoto.ViewModels;
 using Windows.ApplicationModel;
 
 namespace MVVMPhoto;
@@ -27,7 +29,7 @@ public partial class App : Application
 		HookCrashHandlers();
 	}
 
-	protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+	protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
 	{
 		LogStartup();
 
@@ -35,6 +37,13 @@ public partial class App : Application
 		var window = _host.Services.GetRequiredService<MainWindow>();
 		window.Closed += OnMainWindowClosed;
 		window.Activate();
+
+		// Opened after the window shows, so a slow file never delays the window.
+		// async void is safe here: OpenFileAsync reports failures itself and never throws.
+		if (StartupPhoto.Find(args.Arguments) is { } photoPath)
+		{
+			await _host.Services.GetRequiredService<ViewerViewModel>().OpenFileAsync(photoPath);
+		}
 	}
 
 	private void LogStartup()

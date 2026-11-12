@@ -1,4 +1,5 @@
 using Microsoft.UI.Xaml;
+using MVVMPhoto.Services;
 using MVVMPhoto.ViewModels;
 
 namespace MVVMPhoto;
@@ -8,12 +9,15 @@ namespace MVVMPhoto;
 /// </summary>
 public sealed partial class MainWindow : Window
 {
-	public MainWindow(ShellViewModel viewModel)
+	public MainWindow(ShellViewModel viewModel, MainWindowContext windowContext)
 	{
 		// Important: assign before InitializeComponent, or x:Bind reads a null ViewModel.
 		ViewModel = viewModel;
 
 		InitializeComponent();
+
+		// Lets pickers and dialogs find their owner window.
+		windowContext.Attach(AppWindow.Id);
 
 		ExtendsContentIntoTitleBar = true;
 		SetTitleBar(AppTitleBar);

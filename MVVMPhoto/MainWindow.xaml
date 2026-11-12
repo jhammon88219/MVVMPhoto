@@ -2,7 +2,7 @@
 <!--
     MainWindow: the app shell.
      ____________________________________________________
-    | [icon] MVVMPhoto  File View Settings     title bar |
+    | [icon] MVVMPhoto  IMG_2041.jpg  File View Settings |   subtitle = open file name
     |____________________________________________________|
     |                                                    |
     |   content: every top-level view is DECLARED here,  |
@@ -35,7 +35,10 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TitleBar x:Name="AppTitleBar" Title="MVVMPhoto">
+        <TitleBar
+            x:Name="AppTitleBar"
+            Title="MVVMPhoto"
+            Subtitle="{x:Bind ViewModel.Viewer.FileName, Mode=OneWay}">
             <TitleBar.Resources>
                 <!-- The TitleBar template centres its Content slot through this theme resource; the menu goes left, after the title. -->
                 <HorizontalAlignment x:Key="TitleBarContentHorizontalAlignment">Left</HorizontalAlignment>
