@@ -63,3 +63,7 @@ dotnet_diagnostic.IDE0005.severity = warning
 # Logging: use LoggerMessage / structured templates, never string interpolation in log calls.
 dotnet_diagnostic.CA2254.severity = warning
 dotnet_diagnostic.CA1848.severity = suggestion
+
+[MVVMPhoto.Tests/**.cs]
+# Test names read as sentences: Viewer_opens_next_image_on_right_arrow.
+dotnet_diagnostic.CA1707.severity = none

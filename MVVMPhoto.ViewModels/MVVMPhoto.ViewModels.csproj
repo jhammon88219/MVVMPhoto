@@ -1,0 +1,21 @@
+<!--
+  MVVMPhoto.ViewModels: CommunityToolkit.Mvvm view models. They hold state and commands and talk to
+  services only through Core's interfaces.
+  ⚠️ Plain net10.0 with NO WinUI reference: a view model physically cannot touch Visibility, Brush,
+  BitmapImage or a dispatcher. Converting state to UI types is the view's job (x:Bind functions,
+  converters). ArchitectureTests enforces this.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MVVMPhoto.Core\MVVMPhoto.Core.csproj" />
+  </ItemGroup>
+</Project>

@@ -12,6 +12,9 @@
     <File Path="LICENSE.txt" />
     <File Path="README.md" />
   </Folder>
+  <Project Path="MVVMPhoto.Core/MVVMPhoto.Core.csproj" />
+  <Project Path="MVVMPhoto.Tests/MVVMPhoto.Tests.csproj" />
+  <Project Path="MVVMPhoto.ViewModels/MVVMPhoto.ViewModels.csproj" />
   <Project Path="MVVMPhoto/MVVMPhoto.csproj">
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />

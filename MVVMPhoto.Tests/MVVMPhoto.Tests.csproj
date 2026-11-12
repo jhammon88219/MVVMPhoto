@@ -1,0 +1,28 @@
+<!--
+  MVVMPhoto.Tests: xUnit v3 tests for Core and ViewModels. Plain net10.0, so they run in-process in
+  milliseconds with no MSIX deploy. If a test ever needs WinUI, that's a sign the code under test is in
+  the wrong project. (xUnit v3 test projects are executables, hence OutputType Exe.)
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MVVMPhoto.Core\MVVMPhoto.Core.csproj" />
+    <ProjectReference Include="..\MVVMPhoto.ViewModels\MVVMPhoto.ViewModels.csproj" />
+  </ItemGroup>
+</Project>

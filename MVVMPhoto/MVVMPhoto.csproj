@@ -51,8 +51,13 @@
     <!-- Versions are pinned in Directory.Packages.props (repo root). -->
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" />
     <PackageReference Include="Microsoft.WindowsAppSDK" />
-    <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools.WinApp" />
+  </ItemGroup>
+
+  <!-- The app is the only project that knows WinUI. Core and ViewModels stay plain net10.0. -->
+  <ItemGroup>
+    <ProjectReference Include="..\MVVMPhoto.Core\MVVMPhoto.Core.csproj" />
+    <ProjectReference Include="..\MVVMPhoto.ViewModels\MVVMPhoto.ViewModels.csproj" />
   </ItemGroup>
 
   <!--
