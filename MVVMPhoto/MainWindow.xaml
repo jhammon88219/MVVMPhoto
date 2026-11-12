@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="utf-8" ?>
+<!--
+    MainWindow: the app shell.
+
+     ___________________________________________
+    | [icon] MVVMPhoto              title bar   |
+    |___________________________________________|
+    |                                           |
+    |   content: every top-level view is        |
+    |   DECLARED here, bound to its child of    |
+    |   ShellViewModel; which one shows is      |
+    |   shell state (x:Load / Visibility).      |
+    |   Nothing navigates in code.              |
+    |___________________________________________|
+
+    (Sketches use underscores: an XML comment may not contain two hyphens in a row.)
+-->
 <Window
     x:Class="MVVMPhoto.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="using:MVVMPhoto"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="MVVMPhoto"
     mc:Ignorable="d">
@@ -24,11 +39,7 @@
             </TitleBar.IconSource>
         </TitleBar>
 
-        <!--
-            The Frame hosts pages for your application content. Add your UI to
-            MainPage.xaml rather than here so you can use Page features such as
-            navigation events and the Loaded lifecycle.
-        -->
-        <Frame x:Name="RootFrame" Grid.Row="1" />
+        <!-- Content area. Empty until step 2 declares the viewer here. -->
+        <Grid Grid.Row="1" />
     </Grid>
 </Window>

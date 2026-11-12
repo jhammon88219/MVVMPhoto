@@ -17,14 +17,6 @@ public partial class App : Application
 	private readonly IHost _host;
 	private readonly ILogger<App> _logger;
 
-	// Template statics, still used by the template code. Step 1c replaces them with injected services.
-	public static Window Window { get; private set; } = null!;
-
-	public static Microsoft.UI.Dispatching.DispatcherQueue DispatcherQueue { get; private set; } = null!;
-
-	public static nint WindowHandle =>
-		WinRT.Interop.WindowNative.GetWindowHandle(Window);
-
 	public App()
 	{
 		InitializeComponent();
@@ -42,9 +34,6 @@ public partial class App : Application
 		// Resolved here, on the UI thread: WinUI objects must be created on the thread that shows them.
 		var window = _host.Services.GetRequiredService<MainWindow>();
 		window.Closed += OnMainWindowClosed;
-
-		Window = window;
-		DispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 		window.Activate();
 	}
 

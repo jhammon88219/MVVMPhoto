@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using MVVMPhoto.ViewModels;
 
 namespace MVVMPhoto.Composition;
 
@@ -10,6 +11,9 @@ internal static class ServiceRegistration
 {
 	public static IServiceCollection AddMVVMPhoto(this IServiceCollection services)
 	{
+		// View models
+		services.AddSingleton<ShellViewModel>();
+
 		// Windows
 		services.AddSingleton<MainWindow>();
 

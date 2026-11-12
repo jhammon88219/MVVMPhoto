@@ -10,7 +10,7 @@
   IgnorableNamespaces="uap uap10 rescap systemai">
 
   <Identity
-    Name="335bbcdb-62c4-461a-9f26-110681dbd54d"
+    Name="MVVMPhoto"
     Publisher="CN=jhamm"
     Version="1.0.0.0" />
 
