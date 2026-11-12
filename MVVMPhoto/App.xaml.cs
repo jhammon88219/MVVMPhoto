@@ -17,7 +17,7 @@ public partial class App : Application
 	private readonly IHost _host;
 	private readonly ILogger<App> _logger;
 
-	// ⚠️ Template statics, still used by the template code. Step 1c replaces them with injected services.
+	// Template statics, still used by the template code. Step 1c replaces them with injected services.
 	public static Window Window { get; private set; } = null!;
 
 	public static Microsoft.UI.Dispatching.DispatcherQueue DispatcherQueue { get; private set; } = null!;

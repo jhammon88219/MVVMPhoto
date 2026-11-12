@@ -1,6 +1,6 @@
 <!--
   MVVMPhoto.Core: models, service interfaces and portable logic (imaging, library, settings).
-  ⚠️ Plain net10.0 with NO Windows/WinUI dependency, so it is testable in-process and can never reach
+  Plain net10.0 with NO Windows/WinUI dependency, so it is testable in-process and can never reach
   for UI types. Anything needing WinRT gets an interface here and its implementation in the app project.
   ArchitectureTests enforces this.
 -->
