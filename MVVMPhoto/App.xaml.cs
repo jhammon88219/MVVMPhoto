@@ -1,52 +1,106 @@
+using System.Runtime.InteropServices;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+using MVVMPhoto.Composition;
+using MVVMPhoto.Core.Services;
+using Windows.ApplicationModel;
 
 namespace MVVMPhoto;
 
 /// <summary>
-/// Provides application-specific behavior to supplement the default Application class.
+/// App entry point: builds the host (DI + logging), hooks the crash handlers and opens the main window.
 /// </summary>
 public partial class App : Application
 {
-	/// <summary>
-	/// The main application window. Use <c>App.Window</c> from any class that needs
-	/// the window reference (for dialogs, pickers, interop, etc.).
-	/// </summary>
+	private readonly IHost _host;
+	private readonly ILogger<App> _logger;
+
+	// ⚠️ Template statics, still used by the template code. Step 1c replaces them with injected services.
 	public static Window Window { get; private set; } = null!;
 
-	/// <summary>
-	/// The UI thread dispatcher. Use <c>App.DispatcherQueue</c> to marshal calls
-	/// to the UI thread. Fully qualified to avoid CS0104 ambiguity with
-	/// <see cref="Windows.System.DispatcherQueue"/>.
-	/// </summary>
 	public static Microsoft.UI.Dispatching.DispatcherQueue DispatcherQueue { get; private set; } = null!;
 
-	/// <summary>
-	/// The native window handle (HWND). Use for file pickers,
-	/// <c>DataTransferManager</c>, and any WinRT interop that requires
-	/// <c>InitializeWithWindow</c>.
-	/// </summary>
 	public static nint WindowHandle =>
 		WinRT.Interop.WindowNative.GetWindowHandle(Window);
 
-	/// <summary>
-	/// Initializes the singleton application object.
-	/// </summary>
 	public App()
 	{
 		InitializeComponent();
+
+		_host = AppHost.Build();
+		_logger = _host.Services.GetRequiredService<ILogger<App>>();
+
+		HookCrashHandlers();
+	}
+
+	protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+	{
+		LogStartup();
+
+		// Resolved here, on the UI thread: WinUI objects must be created on the thread that shows them.
+		var window = _host.Services.GetRequiredService<MainWindow>();
+		window.Closed += OnMainWindowClosed;
+
+		Window = window;
+		DispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+		window.Activate();
+	}
+
+	private void LogStartup()
+	{
+		// Guarded: the values are built (string formatting, a WinRT call) only when the line will be written.
+		if (_logger.IsEnabled(LogLevel.Information))
+		{
+			var version = Package.Current.Id.Version;
+			var versionText = $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
+			var architecture = RuntimeInformation.ProcessArchitecture.ToString(); // as text: Serilog quotes enums
+			var logsFolder = _host.Services.GetRequiredService<IAppPaths>().LogsFolder;
+
+			LogStarting(versionText, RuntimeInformation.OSDescription, architecture, logsFolder);
+		}
+	}
+
+	private void OnMainWindowClosed(object sender, WindowEventArgs args)
+	{
+		LogShuttingDown();
+
+		// Disposes every service, including the logger, which flushes and closes the log file.
+		_host.Dispose();
 	}
 
 	/// <summary>
-	/// Invoked when the application is launched.
+	/// Last-chance logging. These only RECORD the failure; the app still crashes as it would have,
+	/// because carrying on in an unknown state is worse than stopping.
 	/// </summary>
-	/// <param name="args">Details about the launch request and process.</param>
-	protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+	private void HookCrashHandlers()
 	{
-		Window = new MainWindow();
-		DispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-		Window.Activate();
+		// An exception thrown on the UI thread (event handlers, bindings, layout).
+		UnhandledException += (_, e) => LogUnhandledUiException(e.Exception);
+
+		// Any other thread.
+		AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+			LogUnhandledException(e.ExceptionObject as Exception, e.IsTerminating);
+
+		// A faulted Task nobody awaited. Doesn't crash the app, but is always a bug.
+		TaskScheduler.UnobservedTaskException += (_, e) => LogUnobservedTaskException(e.Exception);
 	}
+
+	// Source-generated log methods (house rule, see CLAUDE.md). They write through the _logger field.
+
+	[LoggerMessage(Level = LogLevel.Information, Message = "MVVMPhoto {Version} starting on {OS} ({Architecture}); logs in {LogsFolder}")]
+	private partial void LogStarting(string version, string os, string architecture, string logsFolder);
+
+	[LoggerMessage(Level = LogLevel.Information, Message = "Main window closed; shutting down")]
+	private partial void LogShuttingDown();
+
+	[LoggerMessage(Level = LogLevel.Critical, Message = "Unhandled exception on the UI thread")]
+	private partial void LogUnhandledUiException(Exception exception);
+
+	[LoggerMessage(Level = LogLevel.Critical, Message = "Unhandled exception (terminating: {IsTerminating})")]
+	private partial void LogUnhandledException(Exception? exception, bool isTerminating);
+
+	[LoggerMessage(Level = LogLevel.Error, Message = "Unobserved task exception")]
+	private partial void LogUnobservedTaskException(Exception exception);
 }

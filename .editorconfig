@@ -60,9 +60,9 @@ dotnet_naming_style.pascal.capitalization = pascal_case
 # --- Analyzer severities ---
 # Unused usings: the template files carry several; step 1 cleans them up.
 dotnet_diagnostic.IDE0005.severity = warning
-# Logging: use LoggerMessage / structured templates, never string interpolation in log calls.
+# Logging: every log call is a source-generated [LoggerMessage] method, never _logger.LogX(...) directly.
 dotnet_diagnostic.CA2254.severity = warning
-dotnet_diagnostic.CA1848.severity = suggestion
+dotnet_diagnostic.CA1848.severity = warning
 
 [MVVMPhoto.Tests/**.cs]
 # Test names read as sentences: Viewer_opens_next_image_on_right_arrow.
